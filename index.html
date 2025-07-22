@@ -7,11 +7,22 @@
   </head>
   <body>
     <game id="game"></game>
-    <!-- Load in the PixiJS -->
     <script src="https://pixijs.download/release/pixi.min.js"></script>
     <!-- Our ES6 code goes here as a type="module" -->
     <script type="module">
-      // PixiJS code goes here...
+      const app = new PIXI.Application();
+      await app.init({
+        backgroundColor: "#3398b9",
+        width: 800,
+        height: 800,
+      });
+      document.getElementById("game").appendChild(app.canvas);
+      const circle = new PIXI.Graphics();
+      circle.beginFill("#f5ef42");
+      circle.drawCircle(400, 400, 5);
+
+      circle.endFill();
+      app.stage.addChild(circle);
     </script>
   </body>
 </html>
