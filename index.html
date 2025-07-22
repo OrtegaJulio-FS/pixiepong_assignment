@@ -8,7 +8,6 @@
   <body>
     <game id="game"></game>
     <script src="https://pixijs.download/release/pixi.min.js"></script>
-    <!-- Our ES6 code goes here as a type="module" -->
     <script type="module">
       const app = new PIXI.Application();
       await app.init({
@@ -23,6 +22,18 @@
 
       circle.endFill();
       app.stage.addChild(circle);
+      app.ticker.add(() => {
+        if (circle.x >= 800) {
+          alert(`Hit detected: X axis`);
+          app.ticker.stop();
+        }
+        if (circle.y >= 800) {
+          alert(`Hit detected: Y axis`);
+          app.ticker.stop();
+        }
+        circle.x += 1;
+        circle.y += 1;
+      });
     </script>
   </body>
 </html>
