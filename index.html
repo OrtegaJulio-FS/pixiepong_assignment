@@ -2,11 +2,12 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Module 3 | Visual Libraries | PixiJS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pixie Pong</title>
   </head>
   <body>
-    <game id="game"></game>
+    <div id="game"></div>
+
     <script src="https://pixijs.download/release/pixi.min.js"></script>
     <script type="module">
       const app = new PIXI.Application();
@@ -16,23 +17,101 @@
         height: 800,
       });
       document.getElementById("game").appendChild(app.canvas);
+
+      const borderThickness = 10;
+
+      // Circle
       const circle = new PIXI.Graphics();
       circle.beginFill("#f5ef42");
-      circle.drawCircle(400, 400, 5);
-
+      circle.drawCircle(0, 0, 5);
       circle.endFill();
+      circle.x = app.screen.width / 2;
+      circle.y = app.screen.height / 2;
       app.stage.addChild(circle);
+
+      //borders
+      const topBorder = new PIXI.Graphics();
+      topBorder.beginFill(0xff0000);
+      topBorder.drawRect(0, 0, app.screen.width, borderThickness);
+      topBorder.endFill();
+
+      const bottomBorder = new PIXI.Graphics();
+      bottomBorder.beginFill(0xff0000);
+      bottomBorder.drawRect(
+        0,
+        app.screen.height - borderThickness,
+        app.screen.width,
+        borderThickness
+      );
+      bottomBorder.endFill();
+
+      const leftBorder = new PIXI.Graphics();
+      leftBorder.beginFill(0xff0000);
+      leftBorder.drawRect(0, 0, borderThickness, app.screen.height);
+      leftBorder.endFill();
+
+      const rightBorder = new PIXI.Graphics();
+      rightBorder.beginFill(0xff0000);
+      rightBorder.drawRect(
+        app.screen.width - borderThickness,
+        0,
+        borderThickness,
+        app.screen.height
+      );
+      rightBorder.endFill();
+
+      app.stage.addChild(topBorder, bottomBorder, leftBorder, rightBorder);
+
+      const bordersHit = {
+        top: false,
+        right: false,
+        bottom: false,
+        left: false,
+      };
+
+      let xMovement = 1;
+      let yMovement = 2;
+
+      function waitForAllBorders() {
+        return new Promise((resolve) => {
+          app.ticker.add(() => {
+            if (
+              bordersHit.top &&
+              bordersHit.right &&
+              bordersHit.bottom &&
+              bordersHit.left
+            ) {
+              resolve();
+            }
+          });
+        });
+      }
       app.ticker.add(() => {
-        if (circle.x >= 800) {
-          alert(`Hit detected: X axis`);
-          app.ticker.stop();
+        circle.x += xMovement;
+        circle.y += yMovement;
+        if (
+          circle.x - 5 <= borderThickness ||
+          circle.x + 5 >= app.screen.width - borderThickness
+        ) {
+          xMovement = -xMovement;
+          if (circle.x - 5 <= borderThickness) bordersHit.left = true;
+          if (circle.x + 5 >= app.screen.width - borderThickness)
+            bordersHit.right = true;
         }
-        if (circle.y >= 800) {
-          alert(`Hit detected: Y axis`);
-          app.ticker.stop();
+        if (
+          circle.y - 5 <= borderThickness ||
+          circle.y + 5 >= app.screen.height - borderThickness
+        ) {
+          yMovement = -yMovement;
+          if (circle.y - 5 <= borderThickness) bordersHit.top = true;
+          if (circle.y + 5 >= app.screen.height - borderThickness)
+            bordersHit.bottom = true;
         }
-        circle.x += 1;
-        circle.y += 1;
+      });
+
+      waitForAllBorders().then(() => {
+        alert("All borders were hit");
+        app.ticker.stop();
       });
     </script>
   </body>
